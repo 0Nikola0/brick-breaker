@@ -115,8 +115,8 @@ function create_bricks(num) {
     let posx = 10;
     let posy = 10;
     let bricks = [];
-    for(i = 0; i < num; i++){
-        bricks += new Brick([posx, posy]);
+    for(let i = 0; i < num; i++){
+        bricks.push(new Brick([posx, posy]));
         posx += 60;
     }
     return bricks;
@@ -127,9 +127,14 @@ const Canvas = document.getElementById("game");
 const context = Canvas.getContext("2d");
 
 const player = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
+const player2 = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
+
 const ball = new Ball([Canvas.width / 3, 400], [20, 20], 200);
 
 const bricks = create_bricks(5);
+console.log(bricks);
+
+const objects = bricks.push(player)
 
 
 let LastTime;
@@ -144,7 +149,6 @@ function CallBack(millis){
 
 function update(dt){
     // TODO Fiiiiix
-    let objs = bricks + player;
     ball.check_collision(bricks);
 
     ball.move(dt);
