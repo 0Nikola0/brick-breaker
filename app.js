@@ -20,11 +20,22 @@ class Paddle extends Rect{
         this.vel = new Vec(vel, 0)
     }
 
-    move(pos){
+    #updatePos(pos){
         this.pos.x = pos
     }
 
-    check_collision(ball){
+    move(){
+        document.addEventListener("mousemove", event =>{
+            /*  Player position is centered to the mouse
+                Also prevents player to go off screen
+            */
+            this.#updatePos(event.offsetX < Canvas.width - this.size.x / 2 ? 
+                (event.offsetX - this.size.x / 2 > 0 ? event.offsetX - this.size.x / 2 : 0) :
+                 Canvas.width - this.size.x);
+        });
+    }
+
+    collidedWith(ball){
         if (((ball.pos.y >= this.pos.y) && (ball.pos.y <= (this.pos.y + this.size.y))) && 
             ((ball.pos.x >= this.pos.x) && (ball.pos.x <= (this.pos.x + this.size.x)))){
             return true;
@@ -32,7 +43,7 @@ class Paddle extends Rect{
         return false;
     }
     
-    moveWithKeys(key, dt){
+    #moveWithKeys(key, dt){
         switch (key.code){
             case "ArrowRight": 
                 this.pos.x += this.vel.x * (dt / 1000);
@@ -62,7 +73,7 @@ class Ball extends Rect{
         this.vel = new Vec(vel, vel);
     }
     
-    check_collision(/*Rect*/ objs){
+    checkCollisions(/*Rect*/ objs){
         // If the ball hits left or right wall
         if ((this.pos.x < 0) || ((this.pos.x + this.size.x) >= Canvas.width)){
             this.vel.x *= -1;
@@ -73,7 +84,7 @@ class Ball extends Rect{
         }
         
         if (objs instanceof Paddle){
-            if (player.check_collision(this)){
+            if (player.collidedWith(this)){
                 // Change direction
                 this.vel.y *= -1;
                 // Add some whitespace so ball doesnt bug
@@ -83,7 +94,7 @@ class Ball extends Rect{
         else{
             for (let i = 0; i < objs.length; i++){
                 // Check wheter the ball collides with any objs
-                if (objs[i].check_collision(this)){
+                if (objs[i].collidedWith(this)){
                     // Change directions
                     this.vel.y *= -1;
                     // Add some whitespace so ball doesnt bug
@@ -118,7 +129,7 @@ class Brick extends Rect{
         context.fillRect(this.pos.x, this.pos.y, this.size.x, this.size.y);
     }
 
-    check_collision(ball){
+    collidedWith(ball){
         if (((ball.pos.y >= this.pos.y) && (ball.pos.y <= (this.pos.y + this.size.y))) && 
             ((ball.pos.x >= this.pos.x) && (ball.pos.x <= (this.pos.x + this.size.x)))){
             // True if collides
@@ -127,17 +138,6 @@ class Brick extends Rect{
         // False if not
         return false;
     }
-}
-
-
-function moveWithMouse(/*Obj must have move() method*/ obj){
-    document.addEventListener("mousemove", event =>{
-        /*  the pos of the player is equal to the pos of the mouse minus the width of the player
-            so the player is centered to the mouse not left allignt,
-            unless the the player is about to exit the canvas
-        */
-        obj.move((event.offsetX) < Canvas.width - player.size.x ? event.offsetX - player.size.x / 2 : Canvas.width - player.size.x);
-    });
 }
 
 
@@ -166,7 +166,7 @@ const player = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
 const ball = new Ball([Canvas.width / 3, 400], [20, 20], 200);
 
 var bricks = create_bricks(3);
-
+debugger;
 
 let LastTime;
 function CallBack(millis){
@@ -182,14 +182,14 @@ function update(dt){
     
     // This can be optimized later, along with the class method
     if (ball.pos.y < (Canvas.height / 2)){
-        ball.check_collision(bricks);
+        ball.checkCollisions(bricks);
     }
     else{
-        ball.check_collision(player)
+        ball.checkCollisions(player)
     }
 
     ball.move(dt);
-    moveWithMouse(player);
+    player.move();
 
     // Background
     context.fillStyle = "#000";
