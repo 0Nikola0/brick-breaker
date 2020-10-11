@@ -64,13 +64,24 @@ class Ball extends Rect{
             this.vel.y *= -1;
         }
 
-        for (let i = 0; i < objs.length; i++){
-            // Check wheter the ball collides with any objs
-            if (((this.pos.y >= objs[i].pos.y) && (this.pos.y <= (objs[i].pos.y + objs[i].size.y))) && 
-                ((this.pos.x >= objs[i].pos.x) && (this.pos.x <= (objs[i].pos.x + objs[i].size.x)))){
+        if (objs instanceof Paddle){
+            if (((this.pos.y >= objs.pos.y) && (this.pos.y <= (objs.pos.y + objs.size.y))) && 
+                ((this.pos.x >= objs.pos.x) && (this.pos.x <= (objs.pos.x + objs.size.x)))){
                 // Change direction
                 this.vel.y *= -1;
-                break;
+            }
+        }
+        else{
+            for (let i = 0; i < objs.length; i++){
+                // Check wheter the ball collides with any objs
+                if (((this.pos.y >= objs[i].pos.y) && (this.pos.y <= (objs[i].pos.y + objs[i].size.y))) && 
+                    ((this.pos.x >= objs[i].pos.x) && (this.pos.x <= (objs[i].pos.x + objs[i].size.x)))){
+                    // Change direction
+                    this.vel.y *= -1;
+                    // Remove the brick with which the ball collided
+                    bricks.splice(i, 1);
+                    break;
+                }
             }
         }
     }
@@ -127,14 +138,15 @@ const Canvas = document.getElementById("game");
 const context = Canvas.getContext("2d");
 
 const player = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
+// TEsting only
 const player2 = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
+players = [player, player2]
 
 const ball = new Ball([Canvas.width / 3, 400], [20, 20], 200);
 
-const bricks = create_bricks(5);
-console.log(bricks);
-
-const objects = bricks.push(player)
+var bricks = create_bricks(5);
+console.log(bricks[1] instanceof Paddle);
+console.log(player instanceof Paddle);
 
 
 let LastTime;
@@ -148,8 +160,14 @@ function CallBack(millis){
 
 
 function update(dt){
-    // TODO Fiiiiix
-    ball.check_collision(bricks);
+    
+    // This can be optimized later, along with the class method
+    if (ball.pos.y < (Canvas.height / 2)){
+        ball.check_collision(bricks);
+    }
+    else{
+        ball.check_collision(player)
+    }
 
     ball.move(dt);
     moveWithMouse(player);
