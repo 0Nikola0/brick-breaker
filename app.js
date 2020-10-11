@@ -24,6 +24,14 @@ class Paddle extends Rect{
         this.pos.x = pos
     }
 
+    check_collision(ball){
+        if (((ball.pos.y >= this.pos.y) && (ball.pos.y <= (this.pos.y + this.size.y))) && 
+            ((ball.pos.x >= this.pos.x) && (ball.pos.x <= (this.pos.x + this.size.x)))){
+            return true;
+        }
+        return false;
+    }
+    
     moveWithKeys(key, dt){
         switch (key.code){
             case "ArrowRight": 
@@ -63,24 +71,26 @@ class Ball extends Rect{
         if (this.pos.y < 0){
             this.vel.y *= -1;
         }
-
+        
         if (objs instanceof Paddle){
-            if (((this.pos.y >= objs.pos.y) && (this.pos.y <= (objs.pos.y + objs.size.y))) && 
-                ((this.pos.x >= objs.pos.x) && (this.pos.x <= (objs.pos.x + objs.size.x)))){
+            if (player.check_collision(this)){
                 // Change direction
                 this.vel.y *= -1;
+                // Add some whitespace so ball doesnt bug
+                this.pos.y -= 5;
             }
         }
         else{
             for (let i = 0; i < objs.length; i++){
                 // Check wheter the ball collides with any objs
-                if (((this.pos.y >= objs[i].pos.y) && (this.pos.y <= (objs[i].pos.y + objs[i].size.y))) && 
-                    ((this.pos.x >= objs[i].pos.x) && (this.pos.x <= (objs[i].pos.x + objs[i].size.x)))){
-                    // Change direction
+                if (objs[i].check_collision(this)){
+                    // Change directions
                     this.vel.y *= -1;
-                    // Remove the brick with which the ball collided
+                    // Add some whitespace so ball doesnt bug
+                    this.pos.y += 5;
+                    // Removing the collided brick
                     bricks.splice(i, 1);
-                    break;
+                    
                 }
             }
         }
@@ -99,13 +109,23 @@ class Ball extends Rect{
 
 
 class Brick extends Rect{
-    constructor(pos, size=[50, 30]){
+    constructor(pos, size=[60, 30]){
         super(pos[0], pos[1], size[0], size[1]);
     }
 
     draw(){
         context.fillStyle = "#fff";
         context.fillRect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+    }
+
+    check_collision(ball){
+        if (((ball.pos.y >= this.pos.y) && (ball.pos.y <= (this.pos.y + this.size.y))) && 
+            ((ball.pos.x >= this.pos.x) && (ball.pos.x <= (this.pos.x + this.size.x)))){
+            // True if collides
+            return true;
+        }
+        // False if not
+        return false;
     }
 }
 
@@ -121,14 +141,19 @@ function moveWithMouse(/*Obj must have move() method*/ obj){
 }
 
 
-// TODO Fiiiix
-function create_bricks(num) {
+function create_bricks(num){
+    // num is the number of rows
     let posx = 10;
     let posy = 10;
     let bricks = [];
     for(let i = 0; i < num; i++){
-        bricks.push(new Brick([posx, posy]));
-        posx += 60;
+        for (let j = 0; j < 10; j++){
+            bricks.push(new Brick([posx, posy]));
+            posx += 80;
+            console.log(i);
+        }  
+        posx = 10;     
+        posy += 38;
     }
     return bricks;
 }
@@ -138,15 +163,9 @@ const Canvas = document.getElementById("game");
 const context = Canvas.getContext("2d");
 
 const player = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
-// TEsting only
-const player2 = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
-players = [player, player2]
-
 const ball = new Ball([Canvas.width / 3, 400], [20, 20], 200);
 
-var bricks = create_bricks(5);
-console.log(bricks[1] instanceof Paddle);
-console.log(player instanceof Paddle);
+var bricks = create_bricks(3);
 
 
 let LastTime;
@@ -176,12 +195,11 @@ function update(dt){
     context.fillStyle = "#000";
     context.fillRect(0, 0, Canvas.width, Canvas.height);
 
-    ball.draw();
-    player.draw();
     for (brick of bricks){
         brick.draw();
     }
-
+    player.draw();
+    ball.draw();
 }
 
 CallBack();
