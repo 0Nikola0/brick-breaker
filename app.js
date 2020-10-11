@@ -166,7 +166,6 @@ const player = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
 const ball = new Ball([Canvas.width / 3, 400], [20, 20], 200);
 
 var bricks = create_bricks(3);
-debugger;
 
 let LastTime;
 function CallBack(millis){
