@@ -1,5 +1,5 @@
 # Brick Breaker
-Simple JavaScript brick breacker game using OOP
+Simple JavaScript brick breaker game using OOP
 
 ![](banner.png)
 
