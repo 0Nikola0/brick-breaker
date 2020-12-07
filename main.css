@@ -5,7 +5,7 @@
 }
 
 body{
-    background-color: coral;
+    background: linear-gradient(to right, #f53d0f, #fdd10b)
 }
 
 .container{

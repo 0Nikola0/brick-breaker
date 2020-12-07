@@ -168,9 +168,7 @@ function create_bricks(num){
     let k = 0;
     for(let i = 0; i < num; i++){
         for (let j = 0; j < 10; j++){
-            //k = k < 18 ? k + 1 : 0;
-            k = k > 2 ? 0 : k + 1;
-            bricks.push(new Brick([posx, posy], [60, 30], k));
+            bricks.push(new Brick([posx, posy], [60, 30], i%3));
             posx += 80;
         }  
         posx = 10;     
@@ -181,7 +179,7 @@ function create_bricks(num){
 
 const clrs = ["#5B84B1FF", "#FC766AFF", "#5F4B8BFF"];
 
-var colors = ["#00FFFF", "#7FFFD4", "#F0FFFF", "#8A2BE2", "#7FFF00", "#FF7F50", 
+const colors = ["#00FFFF", "#7FFFD4", "#F0FFFF", "#8A2BE2", "#7FFF00", "#FF7F50", 
                 "#FF7F50", "#DC143C", "#FFF8DC", "#006400", "#8B008B", "#9932CC", 
                 "#00BFFF", "#9400D3", "#FF1493", "#228B22", "#FFD700", "#FFA500", "SkyBlue"];
 
@@ -191,7 +189,7 @@ const context = Canvas.getContext("2d");
 const player = new Paddle([Canvas.width / 2, Canvas.height - 30], [80, 20], 10);
 const ball = new Ball([Canvas.width / 3, 400], [20, 20], 200);
 
-var bricks = create_bricks(3);
+var bricks = create_bricks(5);
 
 
 let LastTime;
